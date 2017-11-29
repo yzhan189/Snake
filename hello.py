@@ -8,7 +8,7 @@ greyColour = pygame.Color(150,150,150)
 
 # 定义gameOver函数
 def gameOver(playSurface):
-    gameOverFont = pygame.font.Font('arial.ttf',72)
+    gameOverFont = pygame.font.Font('data/arial.ttf',72)
     gameOverSurf = gameOverFont.render('Game Over', True, greyColour)
     gameOverRect = gameOverSurf.get_rect()
     gameOverRect.midtop = (320, 10)

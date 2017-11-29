@@ -9,13 +9,14 @@ class Board:
     RIGHT = ( 1,  0)
 
     def __init__(self,  height, width):
-        self.width  = width
+        self.width = width
         self.height = height
-        self.food = [2, 2]
+        self.food = [10, 10]
 
-    def new_food(self, cells):
+    # randomly choose a place to drop the food
+    def new_food(self, cells, obstacles):
         new_food = [randint(1, self.height-2), randint(1, self.width-2)]
-        while new_food in cells:
+        while new_food in cells or new_food in obstacles:
             new_food = [randint(1, self.height-2), randint(1, self.width-2)]
         self.food = new_food
-        return self.food
+        return True
