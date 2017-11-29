@@ -4,6 +4,7 @@ from control.menu_loop import menu_loop
 from model.board import Board
 from model.snake import Snake
 from view.term_draw import draw_surface, show_message
+from utils import *
 
 LEFT = [-1, 0]
 RIGHT = [1, 0]
@@ -15,8 +16,15 @@ whiteColour = pygame.Color(255,255,255)
 greyColour = pygame.Color(150,150,150)
 greenColour = pygame.Color(0,128,0)
 Play_color =  pygame.Color(255,0,0)
+
+
 player_name = ""
 screen = None
+
+
+WIDTH = 1000
+HEIGHT = 600
+
 
 # define the leaderboard function
 def leader_board():
@@ -31,17 +39,44 @@ def leader_board():
     pygame.display.set_caption("Welcome To Snake")
     background = 'data/bg.jpg'
     bg = pygame.image.load(background).convert_alpha()
+
+    with open(SCORE_PATH, 'r') as f:
+        score_data = json.load(f)
+
+
+
     while True:
         board_screen.fill((0, 0, 0))
         board_screen.blit(bg, (0, 0))
-        show_message(board_screen, 'Welcome to leaderBoard, press F to return', blackColour, 40, 250, 250)
+        show_message(board_screen, 'Welcome to leaderBoard, press F to return', blackColour, 30, 250, 200)
+
+
+        x = 100
+        y = 240
+        for playerName in score_data:
+            player = score_data[playerName]
+            avatar_img = pygame.image.load(player["avatarFilePath"])
+            board_screen.blit(avatar_img, (x, y))
+            show_message(board_screen, playerName + ":   "+ str(player["score"]), blackColour, 25, x+60, y+20)
+            y += 70
+            if (y>HEIGHT-50):
+                y = 240
+                x += 200
+
         pygame.display.update()
+
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
                     init_name()
+                if event.key == pygame.K_ESCAPE:
+                    pygame.event.post(pygame.event.Event(pygame.QUIT))
+
             if event.type == pygame.QUIT:
-                return
+                quitHelper()
+
+
+
 
 
 
@@ -56,6 +91,11 @@ def menu_loop():
     pygame.display.set_caption("Welcome To Snake")
     background = 'data/bg.jpg'
     bg = pygame.image.load(background).convert_alpha()
+
+    # set up local player data
+    addPlayerData(player_name)
+
+
     while True:
         screen.fill((0, 0, 0))
         screen.blit(bg, (0, 0))
@@ -66,17 +106,18 @@ def menu_loop():
                 if event.key == pygame.K_s:
                     game_loop(1)
                 if event.key == pygame.K_l:
-                    menu_loop()
+                    leader_board()
             if event.type == pygame.QUIT:
                 return
 
 
 
+
 #define game end
 def game_end(total_score):
-    #to do
-    # save player_name and to total_score
 
+    # update total_score
+    updatePlayerData(player_name,total_score)
 
     while True:
         pygame.init()
@@ -105,8 +146,7 @@ def game_end(total_score):
                         leader_board()
                 if event.type == pygame.QUIT:
                     return
-    pygame.quit()
-    sys.exit()
+    quitHelper()
 
 
 
@@ -132,8 +172,8 @@ def game_loop(level):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                quitHelper()
+
             elif event.type == pygame.KEYDOWN:
                 # determine the event of keyBoard
                 if event.key == pygame.K_RIGHT or event.key == ord('d'):
@@ -179,6 +219,9 @@ def game_loop(level):
         show_message(playSurface, 'Score: '+ str(total_score), whiteColour, 40,  10, 10)
         show_message(playSurface, 'Level: ' + str(level), whiteColour,40,  10, 50)
 
+        screen.blit(avatar_image, (20, 615))
+        show_message(playSurface,  player_name, whiteColour, 40, 100, 630)
+
         draw_surface(playSurface, redColour, food_loc, 10, 100)
         draw_surface(playSurface, greenColour, my_snake.obstacles, 10, 100)
 
@@ -196,7 +239,10 @@ def init_name():
     # pygame.init()
     # screen = pygame.display.set_mode((1000, 600))
     global player_name
-    name = ""
+
+    # default is a random generated name
+    name = generateName()
+
     font = pygame.font.Font(None, 50)
     while True:
         for evt in pygame.event.get():
@@ -206,21 +252,42 @@ def init_name():
                 elif evt.key == pygame.K_BACKSPACE:
                     name = name[:-1]
                 elif evt.key == pygame.K_RETURN:
-                    player_name = name
+                    # if new name entered, change it
+                    if name != '':
+                        player_name = name
+
+
                     menu_loop()
             elif evt.type == pygame.QUIT:
                 return
+
+        # generate avatar, changing according to name entered
+        avatar = generateAvatar(name)
+        global avatar_image
+        avatar_image = pygame.image.load(avatar)
+
         screen.fill((0, 0, 0))
         show_message(screen, 'Please Enter Your Name: ', whiteColour, 50, 10, 10)
+
+        screen.blit(avatar_image, (WIDTH//2 - 25, HEIGHT//2 + 50))
+
+
         block = font.render(name, True, (255, 255, 255))
         rect = block.get_rect()
         rect.center = screen.get_rect().center
         screen.blit(block, rect)
         pygame.display.flip()
 
+
+def quitHelper():
+    pygame.quit()
+    setData()
+    sys.exit()
+
+
 if __name__ == "__main__":
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((1000, 600))
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     total_score = 0
     init_name()
