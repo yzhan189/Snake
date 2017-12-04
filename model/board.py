@@ -15,9 +15,9 @@ class Board:
         self.foodWeight = 1
 
     # randomly choose a place to drop the food
-    def new_food(self, cells, obstacles):
+    def new_food(self, cells, obstacles, cells_op=[]):
         new_food = [randint(1, self.height-2), randint(1, self.width-2)]
-        while new_food in cells or new_food in obstacles:
+        while new_food in cells or new_food in obstacles or new_food in cells_op:
             new_food = [randint(1, self.height-2), randint(1, self.width-2)]
         self.food = new_food
         return True

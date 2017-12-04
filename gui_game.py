@@ -9,7 +9,7 @@ from database import firebase
 import io
 import requests
 
-from AI import AI1
+from AI import AI1,AI12
 
 
 LEFT = [-1, 0]
@@ -19,6 +19,7 @@ DOWN = [0, 1]
 redColour   = pygame.Color(255,0,0)
 blackColour = pygame.Color(0,0,0)
 whiteColour = pygame.Color(255,255,255)
+greyColour = pygame.Color(200,200,200)
 greyColour = pygame.Color(150,150,150)
 greenColour = pygame.Color(0,128,0)
 Play_color =  pygame.Color(255,0,0)
@@ -179,6 +180,7 @@ def game_loop(level):
     my_board = Board(50, 50)
     my_snake = Snake(50, 50)
     op_snake = Snake(50, 50)
+    op_snake.obstacles = my_snake.obstacles
 
     # set up food and snake
     food_loc = [my_board.food]
@@ -195,7 +197,8 @@ def game_loop(level):
         dir = AI1(my_board,my_snake)
         my_snake.turn(dir)
 
-        dir = AI1(my_board,op_snake)
+        # op is pure AI
+        dir = AI12(my_board,op_snake)
         op_snake.turn(dir)
 
         for event in pygame.event.get():
@@ -218,27 +221,29 @@ def game_loop(level):
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
         # increase along the moving direction
-        prev_cells = my_snake.get_cells()
-        draw_surface(playSurface, blackColour, prev_cells, 10,  100)
+        draw_surface(playSurface, blackColour, my_snake.get_cells(), 10,  100)
         is_eat = my_snake.tick(my_board.food)
         my_snake.teleport_wall()
 
         # increase along the moving direction
-        prev_cells = op_snake.get_cells()
-        draw_surface(playSurface, blackColour, prev_cells, 10,  100)
+        draw_surface(playSurface, blackColour, op_snake.get_cells(), 10,  100)
         is_eat_op = op_snake.tick(my_board.food)
         op_snake.teleport_wall()
 
 
-        if my_snake.is_dead() or isEnd:
+        my_new_cells = my_snake.get_cells()
+        op_new_cells = op_snake.get_cells()
+
+        if my_snake.is_dead(op_new_cells) or op_snake.is_dead(my_new_cells) or isEnd:
             break
-        new_cells = my_snake.get_cells()
 
         # When snake eats the food
         if is_eat:
             score += my_board.foodWeight
             total_score += 1
-            my_board.new_food(my_snake.cells, my_snake.obstacles)
+            my_board.new_food(my_new_cells, my_snake.obstacles, op_new_cells)
+
+        if is_eat or is_eat_op:
             food_loc = [my_board.food]
 
             if score-level > level/2:
@@ -262,7 +267,9 @@ def game_loop(level):
         draw_surface(playSurface, greenColour, my_snake.obstacles, 10, 100)
 
 
-        draw_surface(playSurface, whiteColour, new_cells, 10,  100)
+        draw_surface(playSurface, whiteColour, my_new_cells, 10,  100)
+        draw_surface(playSurface, greyColour, op_new_cells, 10,  100)
+
         pygame.display.flip()
 
         # speed is changeable

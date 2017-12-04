@@ -16,7 +16,7 @@ class Snake:
 
     def __init__(self, height, width):
         # height and width must be divisible by 10
-        center = [ceil(height/2), random(1,width-1)]
+        center = [ceil(height/2), random.randint(1,width-1)]
         # start with length 3
         self.cells = [center, [center[0]+1, center[1]], [center[0]+2, center[1]]]
         self.direction = Snake.RIGHT
@@ -27,18 +27,16 @@ class Snake:
         self.speed = 5
 
     # check whether snake is dead or not
-    def is_dead(self):
-        if self.cells[-1] in self.obstacles:
-            return True
-        if self.cells[-1] in self.cells[:-1]:
+    def is_dead(self,opponent=[]):
+        if self.cells[-1] in self.obstacles or self.cells[-1] in self.cells[:-1] or self.cells[-1] in opponent:
             return True
         else:
             return False
 
     # check if snake will die if moving along the dir, used by AI
-    def will_die(self,dir):
+    def will_die(self,dir,opponent=[]):
         nextStep = [self.cells[-1][0]+dir[0],self.cells[-1][1]+dir[1]]
-        if nextStep in self.obstacles or nextStep in self.cells[:-1]:
+        if nextStep in self.obstacles or nextStep in self.cells[:-1] or nextStep in opponent:
             return True
         else:
             return False
