@@ -13,6 +13,7 @@ class Snake:
     obstacles = []
 
 
+
     def __init__(self, height, width):
         # height and width must be divisible by 10
         center = [ceil(height/2), random(1,width-1)]
