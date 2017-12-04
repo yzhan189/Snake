@@ -1,4 +1,4 @@
-from firebase import firebase
+import pyrebase
 
 # Initialize Firebase
 config = {
@@ -6,8 +6,8 @@ config = {
     "authDomain": "snake-ab217.firebaseapp.com",
     "databaseURL": "https://snake-ab217.firebaseio.com",
     "projectId": "snake-ab217",
-    "storageBucket": "",
+    "storageBucket": "snake-ab217.appspot.com",
     "messagingSenderId": "196087795509"
 }
 
-firebaseApp = firebase.FirebaseApplication("https://snake-ab217.firebaseio.com", authentication=None)
+firebase = pyrebase.initialize_app(config)

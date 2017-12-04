@@ -5,14 +5,14 @@ import hashlib
 from Player import *
 import json
 import os
-from database import firebaseApp
+from database import firebase
 
 
 AVATAR_SIZE = 40
 AVATAR_BLOCK_NUM = 5
 
 SCORE_PATH = "./data/score.json"
-IMAGE_DIR = "./images/"
+IMAGE_DIR = "images/"
 
 # block color
 foreground = [ "rgb(128,0,0)",
@@ -22,8 +22,25 @@ foreground = [ "rgb(128,0,0)",
                "rgb(64,224,208)",
                "rgb(123,104,238)",
                "rgb(70,130,180)",
-               "rgb(123,104,238)",
-               "rgb(255,250,205)" ]
+               "rgb(34,139,34)",
+               "rgb(255,250,205)",
+               "rgb(255,99,71)",
+               "rgb(220,20,60)",
+               "rgb(255,160,122)",
+               "rgb(128,128,0)",
+               "rgb(107,142,35)",
+               "rgb(173,255,47)",
+               "rgb(0,250,154)",
+               "rgb(102,205,170)",
+               "rgb(47,79,79)",
+               "rgb(60,179,113)",
+               "rgb(175,238,238)",
+               "rgb(95,158,160)",
+               "rgb(255,192,203)",
+               "rgb(221,160,221)",
+               "rgb(255,228,181)",
+               "rgb(119,136,153)",
+               "rgb(188,143,143)",]
 # background colour
 background = "rgb(224,224,224)"
 
@@ -91,14 +108,24 @@ def updatePlayerData(name,score):
 
 # update remote data, and clear local data
 def setData():
+    db = firebase.database()
+    storage = firebase.storage()
+
+
     with open(SCORE_PATH, 'r') as f:
         score_data = json.load(f)
 
     # store data on firebase
-    firebaseApp.post('',score_data)
+    for name in score_data:
+        db.child("players").child(name).child("name").set(name)
+        db.child("players").child(name).child("score").set(score_data[name]["score"])
+        db.child("players").child(name).child("avatarFilePath").set(score_data[name]["avatarFilePath"])
 
-    # delete all local avatar image
+
+    # upload image and delete all local avatar image
     for file in os.listdir(IMAGE_DIR):
+        storage.child("images")
+        storage.child(file).put(IMAGE_DIR+file)
         os.remove(IMAGE_DIR+file)
 
     # empty local json file

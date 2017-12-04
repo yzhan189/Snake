@@ -12,6 +12,7 @@ class Board:
         self.width = width
         self.height = height
         self.food = [10, 10]
+        self.foodWeight = 1
 
     # randomly choose a place to drop the food
     def new_food(self, cells, obstacles):
