@@ -41,17 +41,20 @@ class Snake:
         else:
             return False
 
-    # go to next frame
-    def tick(self, food):
-        flag = True  # eat food
+    # return 0 if nothing happen
+    # return 1 if got food
+    # return 2 if got wormhole
+    def tick(self, food, wormhole):
+        if wormhole == self.cells[-1]: #already in the wormhole
+            self.cells.pop(0)
+            return 2
         self.cells.append(list(map(lambda x, y: x + y, self.cells[-1], self.direction)))
         self.last_direction = self.direction
-        if food != self.cells[-1]:
-            self.cells.pop(0)
-            flag = False
-            return flag
+        if food == self.cells[-1]:
+            return 1  # got food, no need to decrease length
         else:
-            return flag
+            self.cells.pop(0)
+            return 0
 
     # turn snake around in specific direction
     def turn(self, direction):

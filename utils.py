@@ -118,6 +118,7 @@ def setData():
     # store data on firebase
     for name in score_data:
         db.child("players").child(name).child("name").set(name)
+        db.child("players").child(name).child("name").set(name)
         db.child("players").child(name).child("score").set(score_data[name]["score"])
         db.child("players").child(name).child("avatarFilePath").set(score_data[name]["avatarFilePath"])
 
@@ -126,9 +127,26 @@ def setData():
     for file in os.listdir(IMAGE_DIR):
         storage.child("images")
         storage.child(file).put(IMAGE_DIR+file)
-        os.remove(IMAGE_DIR+file)
+        #os.remove(IMAGE_DIR+file)
 
     # empty local json file
+    #with open(SCORE_PATH, 'w') as f:
+    #    f.write("{}")
+
+
+def clear_data():
     with open(SCORE_PATH, 'w') as f:
         f.write("{}")
+    for file in os.listdir(IMAGE_DIR):
+        os.remove(IMAGE_DIR+file)
 
+
+# test whether big list contains small list
+def contains(small, big):
+    for i in range(len(big) - len(small) + 1):
+        for j in range(len(small)):
+            if big[i + j] != small[j]:
+                break
+        else:
+            return i, i + len(small)
+    return False
