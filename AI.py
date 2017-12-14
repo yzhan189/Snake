@@ -122,11 +122,3 @@ def AI12(board,snake):
     return availDirections[0]
 
 
-# know to get around obstacle
-def AI2(board,snake):
-    return True
-
-
-# know other opponent
-def AI3(board, snake):
-    availDirections = findAvailable(snake)

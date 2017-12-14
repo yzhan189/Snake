@@ -127,11 +127,11 @@ def setData():
     for file in os.listdir(IMAGE_DIR):
         storage.child("images")
         storage.child(file).put(IMAGE_DIR+file)
-        #os.remove(IMAGE_DIR+file)
+        os.remove(IMAGE_DIR+file)
 
     # empty local json file
-    #with open(SCORE_PATH, 'w') as f:
-    #    f.write("{}")
+    with open(SCORE_PATH, 'w') as f:
+       f.write("{}")
 
 
 def clear_data():

@@ -13,7 +13,7 @@ class Board:
     def __init__(self,  height, width):
         self.width = width
         self.height = height
-        self.food = [10, 10]
+        self.food = [5, 5]
         self.wormhole = [1, 1]
         self.foodWeight = 1
 
